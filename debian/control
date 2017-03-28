@@ -1,0 +1,47 @@
+Source: gdnsd
+Section: net
+Priority: optional
+Maintainer: Faidon Liambotis <paravoid@debian.org>
+Build-Depends: debhelper (>= 9), dh-autoreconf, dh-systemd,
+ libltdl-dev, perl,
+ ragel, libev-dev,
+ liburcu-dev [linux-any],
+ libmaxminddb-dev (>= 1.2.0),
+ libunwind-dev [i386 amd64 ppc64 ppc64el powerpc powerpcspe armel armhf arm64 mips mipsel mips64el],
+ libsocket6-perl, libio-socket-inet6-perl,
+ libwww-perl, libhttp-daemon-perl
+Standards-Version: 3.9.8
+Homepage: http://gdnsd.org/
+Vcs-Browser: https://github.com/paravoid/gdnsd
+Vcs-Git: https://github.com/paravoid/gdnsd.git
+
+Package: gdnsd
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser
+Suggests: geoip-database
+Description: authoritative domain name server
+ gdnsd is an Authoritative-only DNS server. The initial g stands for
+ Geographic, as gdnsd offers a plugin system for geographic (or other sorts of)
+ balancing, redirection, and service-state-conscious failover.
+ .
+ gdnsd has a strong focus on high performance, low latency service. It does
+ not offer any form of caching or recursive service, and does not support
+ DNSSEC.
+ .
+ This package provides the core gdnsd daemon and basic plugins.
+
+Package: gdnsd-dev
+Architecture: all
+Depends: ${misc:Depends}
+Section: libdevel
+Priority: extra
+Description: authoritative domain name server (development files)
+ gdnsd is an Authoritative-only DNS server. The initial g stands for
+ Geographic, as gdnsd offers a plugin system for geographic (or other sorts of)
+ balancing, redirection, and service-state-conscious failover.
+ .
+ gdnsd has a strong focus on high performance, low latency service. It does
+ not offer any form of caching or recursive service, and does not support
+ DNSSEC.
+ .
+ This package provides header files useful to build third-party plugins.
