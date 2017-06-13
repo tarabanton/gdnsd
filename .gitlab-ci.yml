@@ -44,4 +44,4 @@ build-image:
     - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
     - docker push $CI_REGISTRY/$CONTAINER_IMAGE
   dependencies:
-    - build-deb
+    - build-backage
