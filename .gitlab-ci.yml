@@ -18,11 +18,11 @@ run-build:
     - apt-get update
     - apt-get install -y git dh-make build-essential autoconf autotools-dev
     - apt-get install -y liburcu-dev libunwind-dev libev-dev libsocket6-perl ragel libio-socket-inet6-perl libmaxminddb-dev
-    - autoreconf -fvi
+    - autoreconf -vif
     - cp COPYING debian/copyright
-    - dpkg-buildpackage -us -uc
+    - dpkg-buildpackage -i -us -uc -b
     - mkdir build
-    - mv ../goaccess*.deb build/
+    - mv ../*.deb build/
 
   # This stage is only executed for new tags
   #only:
