@@ -33,16 +33,14 @@ build-deb:
     paths:
       - build/*
 
-
-
 build-image:
-   image: docker:latest
-   services:
-     - docker:dind
-   stage: build
-   script:
-     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-     - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
-     - docker push $CI_REGISTRY/$CONTAINER_IMAGE
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
+    - docker push $CI_REGISTRY/$CONTAINER_IMAGE
   dependencies:
     - build-deb
