@@ -16,7 +16,7 @@ run-build:
     - echo "deb http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list
     - echo "deb http://deb.debian.org/debian/ jessie-backports main" >> /etc/apt/sources.list
     - apt-get update
-    - apt-get install -y git dh-make build-essential autoconf autotools-dev libtool-dev libtool
+    - apt-get install -y git dh-make build-essential autoconf autotools-dev libtool
     - apt-get install -y liburcu-dev libunwind-dev libev-dev libsocket6-perl ragel libio-socket-inet6-perl libmaxminddb-dev
     - autoreconf -vif
     - cp COPYING debian/copyright
