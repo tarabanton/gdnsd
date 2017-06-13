@@ -1,0 +1,29 @@
+# Is performed before the scripts in the stages step
+before_script:  
+  - source /etc/profile
+
+# Defines stages which are to be executed
+stages:  
+  - build
+
+# Stage "build"
+run-build:  
+  stage: build
+  script:
+    - echo "deb http://ftp.nl.debian.org/debian/ jessie-backports main non-free contrib" > /etc/apt/sources.list
+    - apt-get update
+    - apt-get install -y liburcu-dev libunwind-dev libev-dev libsocket6-perl ragel libio-socket-inet6-perl libmaxminddb-dev
+    - autoreconf -fvi
+    - cp COPYING debian/copyright
+    - dpkg-buildpackage -us -uc
+    - mkdir build
+    - mv ../goaccess*.deb build/
+
+  # This stage is only executed for new tags
+  #only:
+  #  - tags
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
