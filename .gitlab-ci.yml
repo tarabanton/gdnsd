@@ -32,8 +32,6 @@ build-deb:
   artifacts:
     paths:
       - build/*
-  dependencies:
-    - build-image
 
 
 
@@ -46,3 +44,5 @@ build-image:
      - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
      - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
      - docker push $CI_REGISTRY/$CONTAINER_IMAGE
+  dependencies:
+    - build-deb
