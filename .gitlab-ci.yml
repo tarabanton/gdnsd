@@ -11,11 +11,12 @@ before_script:
 
 # Defines stages which are to be executed
 stages:  
+  - build-package
   - build
 
 # Stage "build"
-build-deb:  
-  stage: build
+build-package:  
+  stage: build-package
   script:
     - echo "deb http://deb.debian.org/debian/ jessie main" > /etc/apt/sources.list
     - echo "deb http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list
