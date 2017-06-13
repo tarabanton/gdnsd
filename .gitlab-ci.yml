@@ -14,7 +14,7 @@ stages:
   - build
 
 # Stage "build"
-run-build:  
+build-deb:  
   stage: build
   script:
     - echo "deb http://deb.debian.org/debian/ jessie main" > /etc/apt/sources.list
@@ -28,23 +28,19 @@ run-build:
     - dpkg-buildpackage -i -us -uc -b
     - mkdir build
     - mv ../*.deb build/
-
-  # This stage is only executed for new tags
-  #only:
-  #  - tags
-
   # The files which are to be made available in GitLab
   artifacts:
     paths:
       - build/*
-  
 
-docker-image:
+build-image:
    image: docker:latest
    services:
    - docker:dind
    stage: build
    script:
-     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-     - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
-     - docker push $CI_REGISTRY/$CONTAINER_IMAGE
+   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+   - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
+   - docker push $CI_REGISTRY/$CONTAINER_IMAGE
+   dependencies:
+   - build-deb  
