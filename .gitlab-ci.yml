@@ -32,17 +32,17 @@ build-deb:
   artifacts:
     paths:
       - build/*
-   dependencies:
-   - build-image
+  dependencies:
+    - build-image
 
 
 
 build-image:
    image: docker:latest
    services:
-   - docker:dind
+     - docker:dind
    stage: build
    script:
-   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-   - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
-   - docker push $CI_REGISTRY/$CONTAINER_IMAGE
+     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+     - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
+     - docker push $CI_REGISTRY/$CONTAINER_IMAGE
