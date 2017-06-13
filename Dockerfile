@@ -1,0 +1,14 @@
+FROM debian:jessie
+
+RUN apt-get update && \
+    apt-get install -y libc6 libev4 liburcu2 init-system-helpers && \
+    dpkg -i build/*.deb && \
+    apt-get autoremove && \
+    apt-get autoclean && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+EXPOSE 53/tcp 53/udp
+VOLUME ["/dns"]
+
+CMD ["/usr/sbin/gdnsd", "-fx", "-c", "/dns", "start"]
