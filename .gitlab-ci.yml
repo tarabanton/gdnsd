@@ -1,9 +1,7 @@
 image: debian:jessie
 
 variables:
-  GIT_SSL_NO_VERIFY: "true"
-  GIT_SUBMODULE_STRATEGY: normal
-  CONTAINER_IMAGE: "geodns/gdnsd/image:latest"
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 # Is performed before the scripts in the stages step
 before_script:  
@@ -17,6 +15,9 @@ stages:
 # Stage "build"
 build-package:  
   stage: build-package
+  variables:
+    GIT_SSL_NO_VERIFY: "true"
+    GIT_SUBMODULE_STRATEGY: normal
   script:
     - echo "deb http://deb.debian.org/debian/ jessie main" > /etc/apt/sources.list
     - echo "deb http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list
@@ -36,12 +37,14 @@ build-package:
 
 build-image:
   image: docker:latest
+  variables:
+    GIT_STRATEGY: none
   services:
     - docker:dind
   stage: build
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
-    - docker push $CI_REGISTRY/$CONTAINER_IMAGE
+    - docker build -t $CONTAINER_IMAGE .
+    - docker push $CONTAINER_IMAGE
   dependencies:
     - build-package
