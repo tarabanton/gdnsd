@@ -1,8 +1,10 @@
 FROM debian:jessie
 
+ADD build/ /tmp
+
 RUN apt-get update && \
     apt-get install -y libc6 libev4 liburcu2 init-system-helpers && \
-    dpkg -i build/gdnsd_2.2.4-1_amd64.deb && \
+    dpkg -i tmp/gdnsd_2.2.4-1_amd64.deb && \
     apt-get autoremove && \
     apt-get autoclean && \
     apt-get clean && \
