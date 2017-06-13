@@ -38,7 +38,7 @@ build-package:
 build-image:
   image: docker:latest
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: fetch
   services:
     - docker:dind
   stage: build
