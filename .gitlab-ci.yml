@@ -1,5 +1,8 @@
 image: debian:jessie
 
+variables:
+  - GIT_SUBMODULE_STRATEGY: normal
+
 # Is performed before the scripts in the stages step
 before_script:  
   - source /etc/profile
