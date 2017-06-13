@@ -33,6 +33,12 @@ run-build:
   #only:
   #  - tags
 
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+  
+
 docker-image:
    image: docker:latest
    services:
@@ -42,8 +48,3 @@ docker-image:
      - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
      - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
      - docker push $CI_REGISTRY/$CONTAINER_IMAGE
-
-  # The files which are to be made available in GitLab
-  artifacts:
-    paths:
-      - build/*
