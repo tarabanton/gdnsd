@@ -3,7 +3,7 @@ image: debian:jessie
 variables:
   GIT_SSL_NO_VERIFY: "true"
   GIT_SUBMODULE_STRATEGY: normal
-  CONTAINER_IMAGE: 
+  CONTAINER_IMAGE: "geodns/gdnsd/image:latest"
 
 # Is performed before the scripts in the stages step
 before_script:  
@@ -40,8 +40,8 @@ docker-image:
    stage: build
    script:
      - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-     - docker build -t $CI_REGISTRY/geodns/gdnsd/image:latest .
-     - docker push $CI_REGISTRY/geodns/gdnsd/image:latest
+     - docker build -t $CI_REGISTRY/$CONTAINER_IMAGE .
+     - docker push $CI_REGISTRY/$CONTAINER_IMAGE
 
   # The files which are to be made available in GitLab
   artifacts:
