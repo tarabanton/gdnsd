@@ -1,7 +1,7 @@
 image: debian:jessie
 
 variables:
-  GIT_SSL_NO_VERIFY: true
+  GIT_SSL_NO_VERIFY: True
   GIT_SUBMODULE_STRATEGY: normal
 
 # Is performed before the scripts in the stages step
