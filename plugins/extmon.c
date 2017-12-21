@@ -85,9 +85,8 @@ static bool helper_is_dead_flag = false;
 static bool die_on_helper_failure = false;
 
 static const char fail_msg[] = "plugin_extmon: Cannot continue monitoring, child process gdnsd_extmon_helper failed!";
+F_NONNULL
 static void helper_is_dead(struct ev_loop* loop, const bool graceful) {
-    dmn_assert(loop);
-
     if(graceful) {
         log_info("plugin_extmon: helper process %li exiting gracefully", (long)helper_pid);
     }
@@ -106,6 +105,7 @@ static void helper_is_dead(struct ev_loop* loop, const bool graceful) {
 
 // common code to bump the local_timeout timer for (interval+timeout)*2,
 //   starting it if not already running.
+F_NONNULL
 static void bump_local_timeout(struct ev_loop* loop, mon_t* mon) {
     mon->local_timeout->repeat = ((mon->svc->timeout + mon->svc->interval) << 1);
     ev_timer_again(loop, mon->local_timeout);
@@ -120,7 +120,7 @@ static void helper_read_cb(struct ev_loop* loop, ev_io* w, int revents V_UNUSED)
         ssize_t read_rv = read(helper_read_fd, &data, 4);
         if(read_rv != 4) {
             if(read_rv < 0) {
-                if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                if(ERRNO_WOULDBLOCK || errno == EINTR)
                     return;
                 else
                     log_err("plugin_extmon: pipe read() failed: %s", dmn_logf_strerror(errno));
@@ -380,11 +380,8 @@ void plugin_extmon_load_config(vscf_data_t* config, const unsigned num_threads V
     } while(0)
 
 void plugin_extmon_add_svctype(const char* name, vscf_data_t* svc_cfg, const unsigned interval, const unsigned timeout) {
-    dmn_assert(name); dmn_assert(svc_cfg);
-
     // defaults
     unsigned max_proc = 0;
-
 
     svcs = xrealloc(svcs, (num_svcs + 1) * sizeof(svc_t));
     svc_t* this_svc = &svcs[num_svcs++];
@@ -439,12 +436,10 @@ static void add_mon_any(const char* desc, const char* svc_name, const char* thin
 }
 
 void plugin_extmon_add_mon_addr(const char* desc, const char* svc_name, const char* cname, const dmn_anysin_t* addr V_UNUSED, const unsigned idx) {
-    dmn_assert(desc); dmn_assert(svc_name); dmn_assert(cname); dmn_assert(addr);
     add_mon_any(desc, svc_name, cname, idx);
 }
 
 void plugin_extmon_add_mon_cname(const char* desc, const char* svc_name, const char* cname, const unsigned idx) {
-    dmn_assert(desc); dmn_assert(svc_name); dmn_assert(cname);
     add_mon_any(desc, svc_name, cname, idx);
 }
 

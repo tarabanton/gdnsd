@@ -57,7 +57,7 @@ static mon_t* mons = NULL;
 static unsigned num_proc = 0;
 
 F_NONNULL F_NORETURN
-static void syserr_for_ev(const char* msg) { dmn_assert(msg); log_fatal("%s: %s", msg, dmn_logf_errno()); }
+static void syserr_for_ev(const char* msg) { log_fatal("%s: %s", msg, dmn_logf_errno()); }
 
 static int plugin_read_fd = -1;
 static int plugin_write_fd = -1;
@@ -171,7 +171,7 @@ static void mon_child_cb(struct ev_loop* loop, ev_child* w, int revents V_UNUSED
     }
     else {
         if(WIFSIGNALED(status))
-            dmn_log_warn("Monitor child process for '%s' terminated by signal %u", this_mon->cmd->desc, WTERMSIG(status));
+            dmn_log_warn("Monitor child process for '%s' terminated by signal %i", this_mon->cmd->desc, WTERMSIG(status));
         else
             dmn_log_warn("Monitor child process for '%s' terminated abnormally...", this_mon->cmd->desc);
     }
@@ -265,7 +265,7 @@ static void plugin_write_cb(struct ev_loop* loop, ev_io* w, int revents V_UNUSED
         ssize_t write_rv = write(plugin_write_fd, &data, 4);
         if(write_rv != 4) {
             if(write_rv < 0) {
-                if(errno == EAGAIN || errno == EWOULDBLOCK)
+                if(ERRNO_WOULDBLOCK)
                     return; // pipe full, wait for more libev notification of write-ready
                 else if(errno == EINTR)
                     continue; // try this write again immediately
@@ -294,8 +294,6 @@ static void plugin_write_cb(struct ev_loop* loop, ev_io* w, int revents V_UNUSED
 
 F_NONNULL
 static void die_gracefully(struct ev_loop* loop) {
-    dmn_assert(loop);
-
     dmn_assert(killed_by);
     static bool done_once = false;
     if(!done_once) { // avoid repetition
@@ -321,7 +319,7 @@ static void die_gracefully(struct ev_loop* loop) {
 
 F_NONNULL
 static void sig_cb(struct ev_loop* loop, ev_signal* w, int revents V_UNUSED) {
-    dmn_assert(loop); dmn_assert(w); dmn_assert(revents == EV_SIGNAL);
+    dmn_assert(revents == EV_SIGNAL);
     switch(w->signum) {
         case SIGINT:
         case SIGTERM:
