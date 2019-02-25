@@ -2,7 +2,7 @@
 
 use _GDT ();
 use File::Temp qw/tmpnam/;
-use Test::More tests => 9;
+use Test::More tests => 14;
 
 # We use dns_port_2 as a custom http listener
 #  for something to monitor
@@ -72,7 +72,58 @@ _GDT->test_dns(
     ],
 );
 
+###### mmih -> metafo+multifo using "ignore_health"
+
+# All are up by default, so we get all 3x DCA IPs
+_GDT->test_dns(
+    qname => 'mmih.example.com', qtype => 'A',
+    answer => [
+        'mmih.example.com 86400 A 192.0.2.70',
+        'mmih.example.com 86400 A 192.0.2.71',
+        'mmih.example.com 86400 A 192.0.2.72',
+    ],
+);
+
+_GDT->write_statefile('admin_state', qq{
+    192.0.2.70/up => DOWN/42
+});
+_GDT->test_log_output([
+    q{admin_state: state of '192.0.2.70/up' forced to DOWN/42, real state is UP/MAX},
+]);
+
+# Marking one down doesn't fail the default 0.5 up_thresh check, but would
+# normally remove the failing IP from results here without "ignore_health".
+# Note the TTLs are still affected (this can be controlled by clamping the
+# minimum dynamic TTL at the zonefile level, if desired)
+_GDT->test_dns(
+    qname => 'mmih.example.com', qtype => 'A',
+    answer => [
+        'mmih.example.com 43200 A 192.0.2.70',
+        'mmih.example.com 43200 A 192.0.2.71',
+        'mmih.example.com 43200 A 192.0.2.72',
+    ],
+);
+
+_GDT->write_statefile('admin_state', qq{
+    192.0.2.70/up => DOWN/42
+    192.0.2.71/up => DOWN/42
+});
+_GDT->test_log_output([
+    q{admin_state: state of '192.0.2.71/up' forced to DOWN/42, real state is UP/MAX},
+]);
+
+# Now we've marked 2/3 down, which will fail the default 0.5 up_thresh, causing
+# failover to the DCB datacenter.
+_GDT->test_dns(
+    qname => 'mmih.example.com', qtype => 'A',
+    answer => [
+        'mmih.example.com 43200 A 192.0.2.80',
+        'mmih.example.com 43200 A 192.0.2.81',
+        'mmih.example.com 43200 A 192.0.2.82',
+    ],
+);
+
 _GDT->test_kill_daemon($pid);
-_GDT->test_kill_daemon($http_pid);
+_GDT->test_kill_other_daemon($http_pid);
 
 END { kill(9, $http_pid) if($http_pid && kill(0, $http_pid)) }

@@ -23,6 +23,7 @@
 #include "gdmaps_test.h"
 #include <tap.h>
 
+// *INDENT-OFF*
 static const char cfg[] = QUOTE(
    my_prod_map => {
     geoip2_db => GeoLite2-City-20141008.mmdb,
@@ -35,16 +36,18 @@ static const char cfg[] = QUOTE(
     auto_dc_limit => 0 // unlimited
    }
 );
+// *INDENT-ON*
 
 gdmaps_t* gdmaps = NULL;
 
-int main(int argc V_UNUSED, char* argv[] V_UNUSED) {
+int main(int argc V_UNUSED, char* argv[] V_UNUSED)
+{
     gdmaps_test_init(getenv("TEST_CFDIR"));
 #ifndef HAVE_GEOIP2
     plan_skip_all("No GeoIP2 support");
     exit(exit_status());
 #endif
-    if(!gdmaps_test_db_exists("GeoLite2-City-20141008.mmdb")) {
+    if (!gdmaps_test_db_exists("GeoLite2-City-20141008.mmdb")) {
         plan_skip_all("Missing database");
         exit(exit_status());
     }
@@ -52,7 +55,7 @@ int main(int argc V_UNUSED, char* argv[] V_UNUSED) {
     gdmaps = gdmaps_test_load(cfg);
     //datacenters => [ us, ie, sg ]
     gdmaps_test_lookup_check(gdmaps, "my_prod_map", "137.138.144.168", "\2\1\3", 16); // Geneva
-    gdmaps_test_lookup_check(gdmaps, "my_prod_map", "69.58.186.119", "\1\2\3", 17); // US East Coast
+    gdmaps_test_lookup_check(gdmaps, "my_prod_map", "69.58.186.119", "\1\2\3", 14); // US East Coast
     gdmaps_test_lookup_check(gdmaps, "my_prod_map", "117.53.170.202", "\3\2\1", 23); // Australia
     exit(exit_status());
 }
